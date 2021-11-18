@@ -1,8 +1,9 @@
 import { Handler } from '@netlify/functions'
 import { prisma } from '~/lib/prisma'
 
-const get = async () => {
+const get = async (gender: boolean) => {
   const players = await prisma.player.findMany({
+    where: { gender },
     include: {
       games: {
         include: { scores: true },
@@ -23,11 +24,11 @@ const get = async () => {
   }).sort((a, b) => b.average - a.average || b.played - a.played)
 }
 
-const handler: Handler = async ({ httpMethod }) => {
+const handler: Handler = async ({ httpMethod, queryStringParameters }) => {
   if (httpMethod === 'GET') {
     return {
       statusCode: 200,
-      body: JSON.stringify({ players: await get() })
+      body: JSON.stringify({ players: await get((queryStringParameters?.gender || 'male') === 'male') })
     }
   } else {
     return {
