@@ -1,0 +1,59 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["referentialIntegrity"]
+}
+
+datasource db {
+  provider             = "mysql"
+  url                  = env("DATABASE_URL")
+  shadowDatabaseUrl    = env("SHADOW_DATABASE_URL")
+  referentialIntegrity = "prisma"
+}
+
+model Team {
+  id Int @id @default(autoincrement()) @db.UnsignedTinyInt
+
+  name String @unique
+
+  players   Player[]
+  homeGames Game[]   @relation(name: "homeTeam")
+  awayGames Game[]   @relation(name: "awayTeam")
+}
+
+model Player {
+  id Int @id @default(autoincrement()) @db.UnsignedSmallInt
+
+  name   String
+  gender Boolean
+
+  teamId Int  @db.UnsignedTinyInt
+  team   Team @relation(fields: [teamId], references: [id])
+
+  scores Score[]
+}
+
+model Game {
+  id Int @id @default(autoincrement()) @db.UnsignedSmallInt
+
+  dateTime DateTime
+
+  homeTeamId Int  @db.UnsignedTinyInt
+  homeTeam   Team @relation(name: "homeTeam", fields: [homeTeamId], references: [id])
+  awayTeamId Int  @db.UnsignedTinyInt
+  awayTeam   Team @relation(name: "awayTeam", fields: [awayTeamId], references: [id])
+
+  scores Score[]
+}
+
+model Score {
+  id Int @id @default(autoincrement()) @db.UnsignedInt
+
+  leg   Int     @db.UnsignedTinyInt
+  score Int     @db.UnsignedTinyInt
+  spare Boolean
+
+  gameId   Int    @db.UnsignedSmallInt
+  game     Game   @relation(fields: [gameId], references: [id])
+  playerId Int    @db.UnsignedSmallInt
+  player   Player @relation(fields: [playerId], references: [id])
+}

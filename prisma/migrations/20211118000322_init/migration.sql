@@ -1,0 +1,40 @@
+-- CreateTable
+CREATE TABLE `Team` (
+    `id` TINYINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `name` VARCHAR(191) NOT NULL,
+
+    UNIQUE INDEX `Team_name_key`(`name`),
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `Player` (
+    `id` SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `name` VARCHAR(191) NOT NULL,
+    `gender` BOOLEAN NOT NULL,
+    `teamId` TINYINT UNSIGNED NOT NULL,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `Game` (
+    `id` SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `dateTime` DATETIME(3) NOT NULL,
+    `homeTeamId` TINYINT UNSIGNED NOT NULL,
+    `awayTeamId` TINYINT UNSIGNED NOT NULL,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `Score` (
+    `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+    `leg` TINYINT UNSIGNED NOT NULL,
+    `score` TINYINT UNSIGNED NOT NULL,
+    `spare` BOOLEAN NOT NULL,
+    `gameId` SMALLINT UNSIGNED NOT NULL,
+    `playerId` SMALLINT UNSIGNED NOT NULL,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;

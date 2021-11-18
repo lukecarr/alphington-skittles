@@ -26,7 +26,9 @@ export default {
     '@nuxtjs/axios',
   ],
 
-  axios: {
-    proxy: true,
+  publicRuntimeConfig: {
+    axios: {
+      baseURL: process.env.NODE_ENV === 'production' ? process.env.BASE_URL || 'http://localhost:8888/' : 'http://localhost:8888/',
+    },
   },
 }

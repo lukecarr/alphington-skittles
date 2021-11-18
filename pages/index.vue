@@ -6,10 +6,14 @@
 import Vue from 'vue'
 
 export default Vue.extend({
-  async asyncData({ $axios }) {
+  data() {
     return {
-      hello: await $axios.$get('/.netlify/functions/hello')
+      teams: [],
     }
+  },
+  async fetch() {
+    const { teams } = await this.$axios.$get('/.netlify/functions/teams')
+    this.teams = teams
   }
 })
 </script>
