@@ -29,7 +29,7 @@ model Player {
   teamId Int  @db.UnsignedTinyInt
   team   Team @relation(fields: [teamId], references: [id])
 
-  scores Score[]
+  games GamePlayer[]
 }
 
 model Game {
@@ -42,7 +42,24 @@ model Game {
   awayTeamId Int  @db.UnsignedTinyInt
   awayTeam   Team @relation(name: "awayTeam", fields: [awayTeamId], references: [id])
 
+  players GamePlayer[]
+}
+
+model GamePlayer {
+  id Int @id @default(autoincrement()) @db.UnsignedInt
+
+  position Int @db.UnsignedTinyInt
+
+  playerId Int    @db.UnsignedSmallInt
+  player   Player @relation(fields: [playerId], references: [id])
+
+  gameId Int  @db.UnsignedSmallInt
+  game   Game @relation(fields: [gameId], references: [id])
+
   scores Score[]
+
+  @@unique([playerId, gameId])
+  @@unique([gameId, position])
 }
 
 model Score {
@@ -52,8 +69,6 @@ model Score {
   score Int     @db.UnsignedTinyInt
   spare Boolean
 
-  gameId   Int    @db.UnsignedSmallInt
-  game     Game   @relation(fields: [gameId], references: [id])
-  playerId Int    @db.UnsignedSmallInt
-  player   Player @relation(fields: [playerId], references: [id])
+  gamePlayerId Int        @db.UnsignedInt
+  gamePlayer   GamePlayer @relation(fields: [gamePlayerId], references: [id])
 }
