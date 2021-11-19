@@ -5,8 +5,8 @@ generator client {
 
 datasource db {
   provider             = "mysql"
-  url                  = env("DATABASE_URL")
-  shadowDatabaseUrl    = env("SHADOW_DATABASE_URL")
+  url                  = env("SKITTLES_DATABASE_URL")
+  shadowDatabaseUrl    = env("SKITTLES_SHADOW_DATABASE_URL")
   referentialIntegrity = "prisma"
 }
 
@@ -57,9 +57,6 @@ model GamePlayer {
   game   Game @relation(fields: [gameId], references: [id])
 
   scores Score[]
-
-  @@unique([playerId, gameId])
-  @@unique([gameId, position])
 }
 
 model Score {
@@ -67,7 +64,6 @@ model Score {
 
   leg   Int     @db.UnsignedTinyInt
   score Int     @db.UnsignedTinyInt
-  spare Boolean
 
   gamePlayerId Int        @db.UnsignedInt
   gamePlayer   GamePlayer @relation(fields: [gamePlayerId], references: [id])
