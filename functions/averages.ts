@@ -1,34 +1,32 @@
 import { Handler } from '@netlify/functions'
 import { prisma } from '~/lib/prisma'
 
-const get = async (gender: boolean) => {
-  const players = await prisma.player.findMany({
-    where: { gender },
-    include: {
-      games: {
-        include: { scores: true },
-      },
-    },
-  })
+type Player = {
+  Player: string;
+  Team: string;
+  Played: number;
+  Average: number;
+}
 
-  return players.map(({ id, name, gender, games }) => {
-    const pins = games.map(({ scores }) => scores.map(({ score }) => score).reduce((a, b) => a + b)).reduce((a, b) => a + b)
-    return {
-      id,
-      name,
-      gender,
-      played: games.length,
-      pins,
-      average: pins / games.length,
-    }
-  }).sort((a, b) => b.average - a.average || b.played - a.played)
+const get = async ({ gender, min }: { gender: boolean; min: number }) => {
+  const players = gender ? await prisma.$queryRaw<Player[]>`
+    SELECT * FROM averagemens WHERE Played >= ${min}
+  ` : await prisma.$queryRaw<Player[]>`
+    SELECT * FROM averageladies WHERE Played >= ${min}
+  `
+
+  return players
 }
 
 const handler: Handler = async ({ httpMethod, queryStringParameters }) => {
   if (httpMethod === 'GET') {
+    const players = await get({
+      gender: (queryStringParameters?.gender || 'male') === 'male',
+      min: parseInt(queryStringParameters?.min || '5')
+    })
     return {
       statusCode: 200,
-      body: JSON.stringify({ players: await get((queryStringParameters?.gender || 'male') === 'male') })
+      body: JSON.stringify({ players: players.map((x, index) => ({ ...x, index: index + 1 }))  })
     }
   } else {
     return {
