@@ -16,6 +16,29 @@
     "*.{js,vue}": "eslint",
     "*.{css,vue}": "stylelint"
   },
+  "commitlint": {
+    "extends": ["gitmoji"],
+    "rules": {
+      "type-empty": [0],
+      "subject-empty": [0]
+    }
+  },
+  "eslintConfig": {
+    "root": true,
+    "env": {
+      "browser": true,
+      "node": true
+    },
+    "extends": [
+      "@nuxtjs/eslint-config-typescript",
+      "plugin:nuxt/recommended",
+      "prettier"
+    ]
+  },
+  "prettier": {
+    "semi": false,
+    "singleQuote": true
+  },
   "dependencies": {
     "@nuxtjs/axios": "^5.13.6",
     "@prisma/client": "3.5.0",
