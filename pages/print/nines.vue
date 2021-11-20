@@ -22,6 +22,7 @@ import { format } from 'date-fns'
     title: 'Nines League',
   },
   layout: 'print',
+  fetchOnServer: false,
 })
 export default class Nines extends Vue {
   players: any[] = []

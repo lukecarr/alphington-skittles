@@ -25,6 +25,8 @@ import { Vue, Component } from 'nuxt-property-decorator'
   head: {
     title: 'Mens Averages',
   },
+  layout: 'print',
+  fetchOnServer: false,
 })
 export default class MensAverages extends Vue {
   min = 5

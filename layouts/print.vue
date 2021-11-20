@@ -28,6 +28,14 @@ export default class PrintLayout extends Vue {
       name: 'Nines League',
       to: '/print/nines',
     },
+    {
+      name: 'Mens\' Averages',
+      to: '/print/averages/mens',
+    },
+    {
+      name: 'Ladies\' Averages',
+      to: '/print/averages/ladies',
+    },
   ]
 }
 </script>

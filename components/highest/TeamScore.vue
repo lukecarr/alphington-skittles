@@ -18,6 +18,7 @@ import { format } from 'date-fns'
 
 @Component({
   name: 'HighestTeamScore',
+  fetchOnServer: false,
 })
 export default class HighestTeamScore extends Vue {
   score = 0

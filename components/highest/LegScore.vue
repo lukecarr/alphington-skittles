@@ -18,6 +18,7 @@ import { format } from 'date-fns'
 
 @Component({
   name: 'HighestLegScore',
+  fetchOnServer: false,
 })
 export default class HighestLegScore extends Vue {
   leg = 0

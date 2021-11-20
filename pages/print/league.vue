@@ -104,6 +104,7 @@ import type { Game, Team } from '@prisma/client'
     title: 'League Table',
   },
   layout: 'print',
+  fetchOnServer: false,
 })
 export default class League extends Vue {
   teams: Team[] = []
