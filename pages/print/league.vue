@@ -18,8 +18,32 @@
                   <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Pos
                   </th>
-                  <th v-for="col in cols" :key="col.name" scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    {{col.name}}
+                  <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Team
+                  </th>
+                  <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Pld
+                  </th>
+                  <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    W
+                  </th>
+                  <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    D
+                  </th>
+                  <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    L
+                  </th>
+                  <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    PF
+                  </th>
+                  <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    PA
+                  </th>
+                  <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    PD
+                  </th>
+                  <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Pts
                   </th>
                 </tr>
               </thead>
@@ -28,8 +52,32 @@
                   <td class="px-3 py-2 whitespace-nowrap text-sm font-medium text-gray-900">
                     {{ idx + 1 }}
                   </td>
-                  <td v-for="col in cols" :key="col.name" class="px-3 py-2 whitespace-nowrap text-sm font-medium text-gray-900">
-                    {{ col.fn(team) }}
+                  <td class="px-3 py-2 whitespace-nowrap text-sm font-medium text-gray-900">
+                    {{ team.name }}
+                  </td>
+                  <td class="px-3 py-2 whitespace-nowrap text-sm font-medium text-gray-900">
+                    {{ pld(team.id) }}
+                  </td>
+                  <td class="px-3 py-2 whitespace-nowrap text-sm font-medium text-gray-900">
+                    {{ wins(team.id) }}
+                  </td>
+                  <td class="px-3 py-2 whitespace-nowrap text-sm font-medium text-gray-900">
+                    {{ draws(team.id) }}
+                  </td>
+                  <td class="px-3 py-2 whitespace-nowrap text-sm font-medium text-gray-900">
+                    {{ losses(team.id) }}
+                  </td>
+                  <td class="px-3 py-2 whitespace-nowrap text-sm font-medium text-gray-900">
+                    {{ pinsFor(team.id) }}
+                  </td>
+                  <td class="px-3 py-2 whitespace-nowrap text-sm font-medium text-gray-900">
+                    {{ pinsAgainst(team.id) }}
+                  </td>
+                  <td class="px-3 py-2 whitespace-nowrap text-sm font-medium text-gray-900">
+                    {{ pinsFor(team.id) - pinsAgainst(team.id) }}
+                  </td>
+                  <td class="px-3 py-2 whitespace-nowrap text-sm font-medium text-gray-900">
+                    {{ points(team.id) }}
                   </td>
                 </tr>
               </tbody>
@@ -43,29 +91,26 @@
 
 <script lang="ts">
 import { Vue, Component } from 'nuxt-property-decorator'
-import type { Team } from '@prisma/client'
+import type { Game, Team } from '@prisma/client'
 
 @Component({
-  name: 'Nines',
+  name: 'League',
   head: {
-    title: 'Nines League',
+    title: 'League Table',
   },
 })
-export default class Nines extends Vue {
-  teams: any[] = []
-  results: any[] = []
-
-  cols: {
-    name: string;
-    fn: (team: Team) => any;
-  }[] = [
-    { name: 'Team', fn: ({ name }) => name },
-    { name: 'Pld', fn: ({ id }) => this.pld(id) },
-    { name: 'W', fn: ({ id }) => this.wins(id) },
-    { name: 'D', fn: ({ id }) => this.draws(id) },
-    { name: 'L', fn: ({ id }) => this.losses(id) },
-    { name: 'Pts', fn: ({ id }) => this.points(id) },
-  ]
+export default class League extends Vue {
+  teams: Team[] = []
+  results: (Game & {
+    homeTeam: Team;
+    awayTeam: Team;
+    result: {
+      homeTeamPins: number;
+      awayTeamPins: number;
+      homeTeamPoints: number;
+      awayTeamPoints: number;
+    };
+  })[] = []
 
   get today() {
     const d = new Date()
@@ -77,7 +122,7 @@ export default class Nines extends Vue {
     this.teams = teams
     const { results } = await this.$axios.$get('/.netlify/functions/results')
     this.results = results
-    this.teams.sort((a, b) => this.points(b) - this.points(a))
+    this.teams.sort((a, b) => this.points(b.id) - this.points(a.id))
   }
 
   pld(teamId: number) {
@@ -94,6 +139,24 @@ export default class Nines extends Vue {
 
   losses(teamId: number) {
     return this.results.filter(game => game.homeTeamId === teamId && game.result.homeTeamPoints < game.result.awayTeamPoints || game.awayTeamId === teamId && game.result.awayTeamPoints < game.result.homeTeamPoints).length
+  }
+
+  pinsFor(teamId: number) {
+    let pins = 0
+    for (const game of this.results) {
+      if (game.homeTeamId === teamId) pins += game.result.homeTeamPins
+      else if (game.awayTeamId === teamId) pins += game.result.awayTeamPins
+    }
+    return pins
+  }
+
+  pinsAgainst(teamId: number) {
+    let pins = 0
+    for (const game of this.results) {
+      if (game.homeTeamId === teamId) pins += game.result.awayTeamPins
+      else if (game.awayTeamId === teamId) pins += game.result.homeTeamPins
+    }
+    return pins
   }
 
   points(teamId: number) {
