@@ -95,7 +95,6 @@ import type { Game, Team } from '@prisma/client'
     title: 'League Table',
   },
   layout: 'print',
-  fetchOnServer: false,
   created() {
     this.$parent.$emit('setTitle', 'League Table')
   },

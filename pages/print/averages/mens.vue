@@ -11,7 +11,6 @@ import { Vue, Component } from 'nuxt-property-decorator'
     title: 'Mens\' Averages',
   },
   layout: 'print',
-  fetchOnServer: false,
   created() {
     this.$parent.$emit('setTitle', 'Mens\' Averages')
   },

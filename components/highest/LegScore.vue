@@ -6,8 +6,8 @@
     <dd class="mt-3 text-3xl font-bold text-gray-900">
       {{ leg }}
     </dd>
-    <dt class="mt-1 text-base font-semibold text-gray-500 truncate">
-      <strong>{{ teamName }}</strong> vs {{ opponentName }} ● {{ date }}
+    <dt class="mt-1 text-base text-gray-500 truncate">
+      <span class="font-semibold">{{ teamName }}</span> vs {{ opponentName }} ● {{ date }}
     </dt>
   </div>
 </template>
@@ -18,13 +18,12 @@ import type { Team } from '@prisma/client'
 
 @Component({
   name: 'HighestLegScore',
-  fetchOnServer: false,
 })
 export default class HighestLegScore extends Vue {
   leg = 0
   score = 0
-  team?: Team
-  opponent?: Team
+  team: Team | null = null
+  opponent: Team | null = null
   date = ''
 
   get teamName() {

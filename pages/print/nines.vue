@@ -10,7 +10,6 @@ import { Vue, Component } from 'nuxt-property-decorator'
     title: 'Nines League',
   },
   layout: 'print',
-  fetchOnServer: false,
   created() {
     this.$parent.$emit('setTitle', 'Nines League')
   },
