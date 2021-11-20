@@ -1,5 +1,5 @@
 <template>
-  <main class="px-4 min-h-screen overflow-hidden">
+  <div>
     <div class="my-4">
       <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">
         League Table
@@ -86,11 +86,16 @@
         </div>
       </div>
     </div>
-  </main>
+    <dl class="mt-5 grid grid-cols-2 sm:grid-cols-3 gap-5">
+      <HighestTeamScore />
+      <HighestLegScore />
+    </dl>
+  </div>
 </template>
 
 <script lang="ts">
 import { Vue, Component } from 'nuxt-property-decorator'
+import { format } from 'date-fns'
 import type { Game, Team } from '@prisma/client'
 
 @Component({
@@ -98,6 +103,7 @@ import type { Game, Team } from '@prisma/client'
   head: {
     title: 'League Table',
   },
+  layout: 'print',
 })
 export default class League extends Vue {
   teams: Team[] = []
@@ -113,8 +119,7 @@ export default class League extends Vue {
   })[] = []
 
   get today() {
-    const d = new Date()
-    return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`
+    return format(new Date(), "EEE do MMM")
   }
 
   async fetch() {

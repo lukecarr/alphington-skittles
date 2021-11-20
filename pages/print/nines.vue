@@ -14,12 +14,14 @@
 
 <script lang="ts">
 import { Vue, Component } from 'nuxt-property-decorator'
+import { format } from 'date-fns'
 
 @Component({
   name: 'Nines',
   head: {
     title: 'Nines League',
   },
+  layout: 'print',
 })
 export default class Nines extends Vue {
   players: any[] = []
@@ -34,13 +36,12 @@ export default class Nines extends Vue {
     { id: 'Total', name: 'Total' }
   ]
 
-  get tableData() {
-    return this.players.slice(0, 20)
+  get today() {
+    return format(new Date(), "EEE do MMM")
   }
 
-  get today() {
-    const d = new Date()
-    return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`
+  get tableData() {
+    return this.players.slice(0, 20)
   }
 
   async fetch() {
