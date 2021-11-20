@@ -1,5 +1,5 @@
 <template>
-  <main class="px-4 min-h-screen overflow-hidden">
+  <div>
     <div class="my-4">
       <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">
         Nines League
@@ -9,7 +9,7 @@
       </p>
     </div>
     <Table :cols="cols" :data="tableData" />
-  </main>
+  </div>
 </template>
 
 <script lang="ts">
