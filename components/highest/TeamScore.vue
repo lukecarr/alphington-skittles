@@ -7,7 +7,7 @@
       {{ score }}
     </dd>
     <dt class="mt-1 text-base font-semibold text-gray-500 truncate">
-      <strong>{{ team.name }}</strong> vs {{ opponent.name }} ● {{ date }}
+      <strong>{{ teamName }}</strong> vs {{ opponentName }} ● {{ date }}
     </dt>
   </div>
 </template>
@@ -25,6 +25,14 @@ export default class HighestTeamScore extends Vue {
   team?: Team
   opponent?: Team
   date = ''
+
+  get teamName() {
+    return this.team?.name || ''
+  }
+
+  get opponentName() {
+    return this.opponent?.name || ''
+  }
 
   async fetch() {
     const { score, team, opponent, date } = await this.$axios.$get('/.netlify/functions/highest-team-score')
