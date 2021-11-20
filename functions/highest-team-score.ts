@@ -1,6 +1,7 @@
 import { Handler } from '@netlify/functions'
 import type { Score } from '@prisma/client'
 import { prisma } from '~/lib/prisma'
+import { $redis } from '~/lib/redis'
 
 const get = async () => {
   let highest = {
@@ -59,9 +60,17 @@ const get = async () => {
 
 const handler: Handler = async ({ httpMethod }) => {
   if (httpMethod === 'GET') {
+    const redis = $redis()
+
+    let highest = await redis.get('stats/highest-team-score')
+    if (highest === null) {
+      highest = JSON.stringify(await get())
+      await redis.set('stats/highest-team-score', highest, 'EX', 60 * 60 * 24)
+    }
+
     return {
       statusCode: 200,
-      body: JSON.stringify(await get())
+      body: highest,
     }
   } else {
     return {
