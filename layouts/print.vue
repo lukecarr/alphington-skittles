@@ -10,12 +10,21 @@
         </nuxt-link>
       </nav>
     </div>
-    <nuxt />
+    <div class="my-4">
+      <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">
+        {{ title }}
+      </h2>
+      <p class="mt-2 text-sm font-medium text-gray-500">
+        Accurate as of {{ today }}
+      </p>
+    </div>
+    <nuxt @setTitle="setTitle($event)" />
   </main>
 </template>
 
 <script lang="ts">
 import { Vue, Component } from 'nuxt-property-decorator'
+import { format } from 'date-fns'
 
 @Component({ name: 'PrintLayout' })
 export default class PrintLayout extends Vue {
@@ -37,5 +46,15 @@ export default class PrintLayout extends Vue {
       to: '/print/averages/ladies',
     },
   ]
+
+  title = ''
+
+  setTitle(newTitle: string) {
+    this.title = newTitle
+  }
+
+  get today() {
+    return format(new Date(), "EEE do MMM")
+  }
 }
 </script>

@@ -1,13 +1,5 @@
 <template>
   <div>
-    <div class="my-4">
-      <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">
-        League Table
-      </h2>
-      <p class="mt-2 text-sm font-medium text-gray-500">
-        Accurate as of {{ today }}
-      </p>
-    </div>
     <div class="flex flex-col">
       <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
         <div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
@@ -95,7 +87,6 @@
 
 <script lang="ts">
 import { Vue, Component } from 'nuxt-property-decorator'
-import { format } from 'date-fns'
 import type { Game, Team } from '@prisma/client'
 
 @Component({
@@ -105,6 +96,9 @@ import type { Game, Team } from '@prisma/client'
   },
   layout: 'print',
   fetchOnServer: false,
+  created() {
+    this.$parent.$emit('setTitle', 'League Table')
+  },
 })
 export default class League extends Vue {
   teams: Team[] = []
@@ -118,10 +112,6 @@ export default class League extends Vue {
       awayTeamPoints: number;
     };
   })[] = []
-
-  get today() {
-    return format(new Date(), "EEE do MMM")
-  }
 
   async fetch() {
     const { teams } = await this.$axios.$get('/.netlify/functions/teams')
