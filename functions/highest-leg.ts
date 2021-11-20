@@ -1,14 +1,16 @@
 import { Handler } from '@netlify/functions'
-import type { Score } from '@prisma/client'
+import { format } from 'date-fns'
+import type { Team, Score } from '@prisma/client'
 import { prisma } from '~/lib/prisma'
 import { $redis } from '~/lib/redis'
 
 const get = async () => {
   let highest = {
     leg: 0,
-    team: '',
-    opponent: '',
-    date: new Date(),
+    score: 0,
+    team: null as Team | null,
+    opponent: null as Team | null,
+    date: '',
   }
 
   const data = await prisma.game.findMany({
@@ -25,22 +27,24 @@ const get = async () => {
 
     for (let i = 1; i <= 6; i++) {
       const homeLeg = ([] as Score[]).concat(...homePlayers.map(player => player.scores)).filter(score => score.leg === i).map(({ score }) => score).reduce((a, b) => a + b, 0)
-      if (highest.leg < homeLeg) {
+      if (highest.score < homeLeg) {
         highest = {
-          leg: homeLeg,
-          team: game.homeTeam.name,
-          opponent: game.awayTeam.name,
-          date: game.dateTime,
+          leg: i,
+          score: homeLeg,
+          team: game.homeTeam,
+          opponent: game.awayTeam,
+          date: format(game.dateTime, 'EEE do MMM'),
         }
       }
 
       const awayLeg = ([] as Score[]).concat(...awayPlayers.map(player => player.scores)).filter(score => score.leg === i).map(({ score }) => score).reduce((a, b) => a + b, 0)
-      if (highest.leg < awayLeg) {
+      if (highest.score < awayLeg) {
         highest = {
-          leg: awayLeg,
-          team: game.awayTeam.name,
-          opponent: game.homeTeam.name,
-          date: game.dateTime,
+          leg: i,
+          score: awayLeg,
+          team: game.awayTeam,
+          opponent: game.homeTeam,
+          date: format(game.dateTime, 'EEE do MMM'),
         }
       }
     }
@@ -56,7 +60,7 @@ const handler: Handler = async ({ httpMethod }) => {
     let highest = await redis.get('stats/highest-leg')
     if (highest === null) {
       highest = JSON.stringify(await get())
-      await redis.set('stats/highest-leg', highest, 'EX', 60 * 60 * 24)
+      await redis.set('stats/highest-leg', highest, 'EX', 60 * 60 * 24 * 7)
     }
 
     return {

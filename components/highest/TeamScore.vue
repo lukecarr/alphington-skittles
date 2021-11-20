@@ -7,14 +7,14 @@
       {{ score }}
     </dd>
     <dt class="mt-1 text-base font-semibold text-gray-500 truncate">
-      <strong>{{ team }}</strong> vs {{ opponent }} ● {{ date }}
+      <strong>{{ team.name }}</strong> vs {{ opponent.name }} ● {{ date }}
     </dt>
   </div>
 </template>
 
 <script lang="ts">
 import { Vue, Component } from 'nuxt-property-decorator'
-import { format } from 'date-fns'
+import type { Team } from '@prisma/client'
 
 @Component({
   name: 'HighestTeamScore',
@@ -22,8 +22,8 @@ import { format } from 'date-fns'
 })
 export default class HighestTeamScore extends Vue {
   score = 0
-  team = ''
-  opponent = ''
+  team?: Team
+  opponent?: Team
   date = ''
 
   async fetch() {
@@ -31,7 +31,7 @@ export default class HighestTeamScore extends Vue {
     this.score = score
     this.team = team
     this.opponent = opponent
-    this.date = format(new Date(date), "eee do MMM")
+    this.date = date
   }
 }
 </script>

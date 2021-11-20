@@ -1,14 +1,15 @@
 import { Handler } from '@netlify/functions'
-import type { Score } from '@prisma/client'
+import { format } from 'date-fns'
+import type { Team, Score } from '@prisma/client'
 import { prisma } from '~/lib/prisma'
 import { $redis } from '~/lib/redis'
 
 const get = async () => {
   let highest = {
     score: 0,
-    team: '',
-    opponent: '',
-    date: new Date(),
+    team: null as Team | null,
+    opponent: null as Team | null,
+    date: '',
   }
 
   const data = await prisma.game.findMany({
@@ -40,17 +41,17 @@ const get = async () => {
     if (highest.score < result.homeTeamPins) {
       highest = {
         score: result.homeTeamPins,
-        team: game.homeTeam.name,
-        opponent: game.awayTeam.name,
-        date: game.dateTime,
+        team: game.homeTeam,
+        opponent: game.awayTeam,
+        date: format(game.dateTime, 'EEE do MMM'),
       }
     } 
     if (highest.score < result.awayTeamPins) {
       highest = {
         score: result.awayTeamPins,
-        team: game.awayTeam.name,
-        opponent: game.homeTeam.name,
-        date: game.dateTime,
+        team: game.awayTeam,
+        opponent: game.homeTeam,
+        date: format(game.dateTime, 'EEE do MMM'),
       }
     }
   }
