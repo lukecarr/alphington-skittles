@@ -10,7 +10,7 @@
         </nuxt-link>
       </nav>
     </div>
-    <nuxt keep-alive :keep-alive-props="{ max: 10 }" />
+    <nuxt />
   </main>
 </template>
 
