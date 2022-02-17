@@ -4,10 +4,11 @@
       Highest Leg Score
     </dt>
     <dd class="mt-3 text-3xl font-bold text-gray-900">
-      {{ leg }}
+      {{ score }}
     </dd>
     <dt class="mt-1 text-base text-gray-500 truncate">
-      <span class="font-semibold">{{ teamName }}</span> vs {{ opponentName }} ● {{ date }}
+      <span class="font-semibold">{{ teamName }}</span> vs {{ opponentName }} ●
+      {{ date }}
     </dt>
   </div>
 </template>
@@ -35,7 +36,9 @@ export default class HighestLegScore extends Vue {
   }
 
   async fetch() {
-    const { leg, score, team, opponent, date } = await this.$axios.$get('/.netlify/functions/highest-leg')
+    const { leg, score, team, opponent, date } = await this.$axios.$get(
+      '/.netlify/functions/highest-leg'
+    )
     this.leg = leg
     this.score = score
     this.team = team
